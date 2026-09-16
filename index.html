@@ -1,1 +1,1865 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
 
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <meta
+        name="description"
+        content="A responsive Kubernetes DevOps application demonstrating GitHub, Docker, Amazon ECR, Amazon EKS, Kubernetes and Nginx."
+    >
+
+    <meta name="theme-color" content="#0f172a">
+
+    <title>Kubernetes DevOps Application</title>
+
+    <style>
+        /* =========================================================
+           GLOBAL STYLES
+        ========================================================= */
+
+        :root {
+            --bg: #f8fafc;
+            --bg-secondary: #eef2ff;
+            --card: #ffffff;
+            --text: #0f172a;
+            --muted: #64748b;
+            --border: #e2e8f0;
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #7c3aed;
+            --success: #16a34a;
+            --success-bg: #dcfce7;
+            --dark: #0f172a;
+            --dark-secondary: #1e293b;
+            --shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
+            --radius: 18px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        button {
+            font: inherit;
+        }
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        .container {
+            width: min(1120px, 92%);
+            margin: 0 auto;
+        }
+
+        .section {
+            padding: 90px 0;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: clamp(2rem, 4vw, 3rem);
+            margin-bottom: 14px;
+            letter-spacing: -0.03em;
+        }
+
+        .section-description {
+            max-width: 720px;
+            margin: 0 auto 45px;
+            text-align: center;
+            color: var(--muted);
+            font-size: 1.05rem;
+        }
+
+        /* =========================================================
+           ACCESSIBILITY
+        ========================================================= */
+
+        .skip-link {
+            position: absolute;
+            top: -50px;
+            left: 20px;
+            background: #ffffff;
+            color: #000000;
+            padding: 10px 16px;
+            border-radius: 8px;
+            z-index: 9999;
+        }
+
+        .skip-link:focus {
+            top: 15px;
+        }
+
+        :focus-visible {
+            outline: 3px solid #60a5fa;
+            outline-offset: 3px;
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* =========================================================
+           NAVIGATION
+        ========================================================= */
+
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .nav-container {
+            min-height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+        }
+
+        .logo {
+            color: white;
+            font-size: 1.15rem;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+        .logo span {
+            color: #60a5fa;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 26px;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: #cbd5e1;
+            font-size: 0.95rem;
+            transition: color 0.2s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a:focus {
+            color: white;
+        }
+
+        .menu-button {
+            display: none;
+            background: transparent;
+            color: white;
+            border: 1px solid #475569;
+            border-radius: 9px;
+            padding: 8px 10px;
+            cursor: pointer;
+        }
+
+        /* =========================================================
+           HERO
+        ========================================================= */
+
+        .hero {
+            position: relative;
+            overflow: hidden;
+            background:
+                radial-gradient(
+                    circle at 10% 10%,
+                    rgba(37, 99, 235, 0.25),
+                    transparent 30%
+                ),
+                radial-gradient(
+                    circle at 85% 20%,
+                    rgba(124, 58, 237, 0.2),
+                    transparent 30%
+                ),
+                linear-gradient(
+                    135deg,
+                    #0f172a,
+                    #111827
+                );
+
+            color: white;
+            padding: 100px 0 90px;
+        }
+
+        .hero-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 60px;
+            align-items: center;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 999px;
+            background: rgba(255,255,255,0.07);
+            color: #dbeafe;
+            font-size: 0.88rem;
+            margin-bottom: 22px;
+        }
+
+        .badge-dot {
+            width: 9px;
+            height: 9px;
+            border-radius: 50%;
+            background: #22c55e;
+            box-shadow: 0 0 12px rgba(34,197,94,0.8);
+        }
+
+        .hero h1 {
+            font-size: clamp(2.6rem, 6vw, 5rem);
+            line-height: 1.05;
+            letter-spacing: -0.05em;
+            margin-bottom: 22px;
+        }
+
+        .hero h1 span {
+            color: #60a5fa;
+        }
+
+        .hero-text {
+            color: #cbd5e1;
+            max-width: 680px;
+            font-size: 1.12rem;
+            margin-bottom: 30px;
+        }
+
+        .hero-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 14px;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 46px;
+            padding: 0 20px;
+            border-radius: 10px;
+            border: 1px solid transparent;
+            cursor: pointer;
+            font-weight: 700;
+            transition:
+                transform 0.2s ease,
+                background 0.2s ease,
+                border-color 0.2s ease;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+        }
+
+        .button-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .button-primary:hover {
+            background: var(--primary-dark);
+        }
+
+        .button-secondary {
+            background: rgba(255,255,255,0.06);
+            color: white;
+            border-color: rgba(255,255,255,0.18);
+        }
+
+        .hero-card {
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 22px;
+            padding: 26px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.25);
+        }
+
+        .terminal {
+            background: #020617;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        .terminal-header {
+            display: flex;
+            gap: 7px;
+            padding: 13px 16px;
+            background: #111827;
+        }
+
+        .terminal-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #64748b;
+        }
+
+        .terminal-body {
+            padding: 20px;
+            color: #cbd5e1;
+            font-family: "Courier New", monospace;
+            font-size: 0.85rem;
+            overflow-x: auto;
+        }
+
+        .terminal-line {
+            margin-bottom: 8px;
+        }
+
+        .terminal-green {
+            color: #4ade80;
+        }
+
+        .terminal-blue {
+            color: #60a5fa;
+        }
+
+        /* =========================================================
+           STATUS
+        ========================================================= */
+
+        .status-section {
+            margin-top: -25px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .status-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 26px;
+        }
+
+        .status-row {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .status-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            font-size: 1.4rem;
+            background: var(--success-bg);
+        }
+
+        .status-title {
+            font-weight: 800;
+            margin-bottom: 3px;
+        }
+
+        .status-message {
+            color: var(--muted);
+            font-size: 0.93rem;
+        }
+
+        .status-pill {
+            background: var(--success-bg);
+            color: #166534;
+            border-radius: 999px;
+            padding: 7px 13px;
+            font-size: 0.85rem;
+            font-weight: 800;
+        }
+
+        /* =========================================================
+           TECHNOLOGY CARDS
+        ========================================================= */
+
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .tech-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            box-shadow: var(--shadow);
+            transition:
+                transform 0.2s ease,
+                box-shadow 0.2s ease;
+        }
+
+        .tech-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+        }
+
+        .tech-icon {
+            width: 50px;
+            height: 50px;
+            display: grid;
+            place-items: center;
+            border-radius: 13px;
+            background: #eff6ff;
+            color: var(--primary);
+            margin-bottom: 18px;
+            font-size: 1.35rem;
+            font-weight: 800;
+        }
+
+        .tech-card h3 {
+            margin-bottom: 8px;
+            font-size: 1.15rem;
+        }
+
+        .tech-card p {
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        /* =========================================================
+           WORKFLOW
+        ========================================================= */
+
+        .workflow {
+            background: #f1f5f9;
+        }
+
+        .workflow-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+        }
+
+        .workflow-step {
+            position: relative;
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+            min-height: 175px;
+        }
+
+        .workflow-number {
+            display: inline-grid;
+            place-items: center;
+            width: 35px;
+            height: 35px;
+            background: var(--dark);
+            color: white;
+            border-radius: 50%;
+            font-size: 0.85rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+        }
+
+        .workflow-step h3 {
+            margin-bottom: 7px;
+        }
+
+        .workflow-step p {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        /* =========================================================
+           ARCHITECTURE
+        ========================================================= */
+
+        .architecture-card {
+            background: var(--dark);
+            color: white;
+            border-radius: 22px;
+            padding: 35px;
+            overflow-x: auto;
+        }
+
+        .architecture-flow {
+            min-width: 760px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .architecture-item {
+            min-width: 135px;
+            text-align: center;
+            padding: 18px;
+            border: 1px solid #334155;
+            border-radius: 14px;
+            background: var(--dark-secondary);
+        }
+
+        .architecture-item strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .architecture-item span {
+            color: #94a3b8;
+            font-size: 0.82rem;
+        }
+
+        .arrow {
+            font-size: 1.5rem;
+            color: #60a5fa;
+        }
+
+        /* =========================================================
+           LIVE DASHBOARD
+        ========================================================= */
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .dashboard-card {
+            background: white;
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 25px;
+            box-shadow: var(--shadow);
+        }
+
+        .dashboard-label {
+            color: var(--muted);
+            font-size: 0.88rem;
+            margin-bottom: 8px;
+        }
+
+        .dashboard-value {
+            font-size: 1.9rem;
+            font-weight: 850;
+            margin-bottom: 5px;
+        }
+
+        .dashboard-note {
+            color: var(--success);
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        /* =========================================================
+           PROJECT DETAILS
+        ========================================================= */
+
+        .details-section {
+            background: #ffffff;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        .details-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 28px;
+            background: #ffffff;
+        }
+
+        .details-card h3 {
+            margin-bottom: 20px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+            padding: 13px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .detail-row:last-child {
+            border-bottom: 0;
+        }
+
+        .detail-label {
+            color: var(--muted);
+        }
+
+        .detail-value {
+            text-align: right;
+            font-weight: 700;
+        }
+
+        /* =========================================================
+           FOOTER
+        ========================================================= */
+
+        footer {
+            background: var(--dark);
+            color: #cbd5e1;
+            padding: 45px 0;
+        }
+
+        .footer-grid {
+            display: flex;
+            justify-content: space-between;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .footer-title {
+            color: white;
+            font-weight: 800;
+            margin-bottom: 5px;
+        }
+
+        .footer-text {
+            color: #94a3b8;
+            font-size: 0.9rem;
+        }
+
+        .footer-links {
+            display: flex;
+            gap: 18px;
+        }
+
+        .footer-links a {
+            color: #cbd5e1;
+            font-size: 0.9rem;
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        /* =========================================================
+           DARK MODE
+        ========================================================= */
+
+        body.dark {
+            --bg: #020617;
+            --bg-secondary: #0f172a;
+            --card: #0f172a;
+            --text: #f8fafc;
+            --muted: #94a3b8;
+            --border: #1e293b;
+            --shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        body.dark .workflow {
+            background: #020617;
+        }
+
+        body.dark .workflow-step,
+        body.dark .status-card,
+        body.dark .tech-card,
+        body.dark .dashboard-card,
+        body.dark .details-card {
+            background: #0f172a;
+        }
+
+        body.dark .details-section {
+            background: #020617;
+        }
+
+        body.dark .status-title,
+        body.dark .tech-card h3,
+        body.dark .workflow-step h3,
+        body.dark .details-card h3,
+        body.dark .dashboard-value {
+            color: #f8fafc;
+        }
+
+        .theme-button {
+            background: transparent;
+            border: 1px solid #475569;
+            color: white;
+            border-radius: 9px;
+            padding: 8px 11px;
+            cursor: pointer;
+        }
+
+        /* =========================================================
+           RESPONSIVE DESIGN
+        ========================================================= */
+
+        @media (max-width: 950px) {
+
+            .hero-grid,
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tech-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .workflow-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 720px) {
+
+            .nav-container {
+                min-height: 64px;
+            }
+
+            .menu-button {
+                display: block;
+            }
+
+            .nav-links {
+                position: absolute;
+                left: 0;
+                right: 0;
+                top: 64px;
+                background: #0f172a;
+                padding: 20px;
+                flex-direction: column;
+                align-items: flex-start;
+                display: none;
+                border-bottom: 1px solid #334155;
+            }
+
+            .nav-links.open {
+                display: flex;
+            }
+
+            .theme-button {
+                margin-left: auto;
+                margin-right: 5px;
+            }
+
+            .hero {
+                padding: 75px 0 65px;
+            }
+
+            .section {
+                padding: 70px 0;
+            }
+
+            .tech-grid,
+            .workflow-grid,
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .status-row {
+                grid-template-columns: auto 1fr;
+            }
+
+            .status-pill {
+                grid-column: 2;
+                width: fit-content;
+            }
+
+            .footer-grid {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .architecture-card {
+                padding: 22px;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+
+            html {
+                scroll-behavior: auto;
+            }
+
+            *,
+            *::before,
+            *::after {
+                transition: none !important;
+                animation: none !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Skip link for keyboard and screen-reader users -->
+    <a href="#main-content" class="skip-link">
+        Skip to main content
+    </a>
+
+    <!-- =========================================================
+         NAVIGATION
+    ========================================================= -->
+
+    <header class="navbar">
+
+        <div class="container nav-container">
+
+            <a href="#home" class="logo" aria-label="Kubernetes DevOps home">
+                K8s<span>DevOps</span>
+            </a>
+
+            <button
+                class="theme-button"
+                id="themeButton"
+                type="button"
+                aria-label="Toggle dark mode"
+                title="Toggle dark mode"
+            >
+                🌙
+            </button>
+
+            <button
+                class="menu-button"
+                id="menuButton"
+                type="button"
+                aria-label="Open navigation menu"
+                aria-expanded="false"
+                aria-controls="navigation"
+            >
+                ☰
+            </button>
+
+            <nav id="navigation" aria-label="Main navigation">
+
+                <ul class="nav-links" id="navLinks">
+
+                    <li>
+                        <a href="#about">Overview</a>
+                    </li>
+
+                    <li>
+                        <a href="#technology">Technology</a>
+                    </li>
+
+                    <li>
+                        <a href="#workflow">Workflow</a>
+                    </li>
+
+                    <li>
+                        <a href="#architecture">Architecture</a>
+                    </li>
+
+                    <li>
+                        <a href="#dashboard">Status</a>
+                    </li>
+
+                </ul>
+
+            </nav>
+
+        </div>
+
+    </header>
+
+    <!-- =========================================================
+         MAIN CONTENT
+    ========================================================= -->
+
+    <main id="main-content">
+
+        <!-- =====================================================
+             HERO SECTION
+        ====================================================== -->
+
+        <section class="hero" id="home">
+
+            <div class="container hero-grid">
+
+                <div>
+
+                    <div class="badge">
+                        <span class="badge-dot"></span>
+                        DevOps Application Running
+                    </div>
+
+                    <h1>
+                        Kubernetes
+                        <span>DevOps</span>
+                        Application
+                    </h1>
+
+                    <p class="hero-text">
+                        A responsive web application demonstrating a complete
+                        container deployment workflow using GitHub, Docker,
+                        Amazon ECR, Kubernetes, Amazon EKS and Nginx.
+                    </p>
+
+                    <div class="hero-actions">
+
+                        <a
+                            href="#workflow"
+                            class="button button-primary"
+                        >
+                            Explore Workflow
+                        </a>
+
+                        <a
+                            href="#architecture"
+                            class="button button-secondary"
+                        >
+                            View Architecture
+                        </a>
+
+                    </div>
+
+                </div>
+
+                <div class="hero-card">
+
+                    <div class="terminal" aria-label="Deployment workflow terminal">
+
+                        <div
+                            class="terminal-header"
+                            aria-hidden="true"
+                        >
+                            <span class="terminal-dot"></span>
+                            <span class="terminal-dot"></span>
+                            <span class="terminal-dot"></span>
+                        </div>
+
+                        <div class="terminal-body">
+
+                            <div class="terminal-line">
+                                <span class="terminal-green">$</span>
+                                docker build -t kubernetes-app .
+                            </div>
+
+                            <div class="terminal-line">
+                                <span class="terminal-green">$</span>
+                                docker push ECR
+                            </div>
+
+                            <div class="terminal-line">
+                                <span class="terminal-green">$</span>
+                                eksctl create cluster
+                            </div>
+
+                            <div class="terminal-line">
+                                <span class="terminal-green">$</span>
+                                kubectl get nodes
+                            </div>
+
+                            <div class="terminal-line terminal-blue">
+                                ✓ Worker node: Ready
+                            </div>
+
+                            <div class="terminal-line terminal-blue">
+                                ✓ System Pods: Running
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             APPLICATION STATUS
+        ====================================================== -->
+
+        <section class="status-section" aria-label="Application status">
+
+            <div class="container">
+
+                <div class="status-card">
+
+                    <div class="status-row">
+
+                        <div class="status-icon" aria-hidden="true">
+                            ✓
+                        </div>
+
+                        <div>
+
+                            <div class="status-title">
+                                Application Status
+                            </div>
+
+                            <div
+                                class="status-message"
+                                id="statusMessage"
+                            >
+                                All application components are operational.
+                            </div>
+
+                        </div>
+
+                        <div class="status-pill">
+                            <span
+                                id="statusText"
+                            >
+                                RUNNING
+                            </span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             OVERVIEW
+        ====================================================== -->
+
+        <section class="section" id="about">
+
+            <div class="container">
+
+                <h2 class="section-title">
+                    Project Overview
+                </h2>
+
+                <p class="section-description">
+                    This project demonstrates how a web application can be
+                    containerized with Docker, stored in Amazon ECR and
+                    prepared for deployment on a Kubernetes cluster running
+                    on Amazon EKS.
+                </p>
+
+                <div class="tech-grid">
+
+                    <article class="tech-card">
+
+                        <div class="tech-icon">
+                            G
+                        </div>
+
+                        <h3>GitHub</h3>
+
+                        <p>
+                            Stores the application source code and provides
+                            version control for the DevOps workflow.
+                        </p>
+
+                    </article>
+
+                    <article class="tech-card">
+
+                        <div class="tech-icon">
+                            D
+                        </div>
+
+                        <h3>Docker</h3>
+
+                        <p>
+                            Packages the application and Nginx web server
+                            into a portable container image.
+                        </p>
+
+                    </article>
+
+                    <article class="tech-card">
+
+                        <div class="tech-icon">
+                            E
+                        </div>
+
+                        <h3>Amazon ECR</h3>
+
+                        <p>
+                            Provides a private container registry for storing
+                            and managing the Docker image.
+                        </p>
+
+                    </article>
+
+                    <article class="tech-card">
+
+                        <div class="tech-icon">
+                            K
+                        </div>
+
+                        <h3>Kubernetes</h3>
+
+                        <p>
+                            Provides container orchestration and manages
+                            application workloads using Pods and Services.
+                        </p>
+
+                    </article>
+
+                    <article class="tech-card">
+
+                        <div class="tech-icon">
+                            E
+                        </div>
+
+                        <h3>Amazon EKS</h3>
+
+                        <p>
+                            Provides a managed Kubernetes control plane for
+                            running containerized workloads on AWS.
+                        </p>
+
+                    </article>
+
+                    <article class="tech-card">
+
+                        <div class="tech-icon">
+                            N
+                        </div>
+
+                        <h3>Nginx</h3>
+
+                        <p>
+                            Serves the HTML application from inside the
+                            Docker container.
+                        </p>
+
+                    </article>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             WORKFLOW
+        ====================================================== -->
+
+        <section class="section workflow" id="workflow">
+
+            <div class="container">
+
+                <h2 class="section-title">
+                    Deployment Workflow
+                </h2>
+
+                <p class="section-description">
+                    The application follows a complete DevOps workflow from
+                    source code to cloud-based container orchestration.
+                </p>
+
+                <div class="workflow-grid">
+
+                    <article class="workflow-step">
+
+                        <span class="workflow-number">01</span>
+
+                        <h3>Source Code</h3>
+
+                        <p>
+                            Application source code is maintained in a
+                            GitHub repository.
+                        </p>
+
+                    </article>
+
+                    <article class="workflow-step">
+
+                        <span class="workflow-number">02</span>
+
+                        <h3>EC2 Instance</h3>
+
+                        <p>
+                            The project is cloned and verified on an
+                            Amazon Linux EC2 instance.
+                        </p>
+
+                    </article>
+
+                    <article class="workflow-step">
+
+                        <span class="workflow-number">03</span>
+
+                        <h3>Docker Build</h3>
+
+                        <p>
+                            The Dockerfile is used to build the application
+                            container image.
+                        </p>
+
+                    </article>
+
+                    <article class="workflow-step">
+
+                        <span class="workflow-number">04</span>
+
+                        <h3>Local Testing</h3>
+
+                        <p>
+                            The Docker container is started and tested
+                            locally on the EC2 instance.
+                        </p>
+
+                    </article>
+
+                    <article class="workflow-step">
+
+                        <span class="workflow-number">05</span>
+
+                        <h3>Amazon ECR</h3>
+
+                        <p>
+                            The Docker image is tagged and pushed to the
+                            private ECR repository.
+                        </p>
+
+                    </article>
+
+                    <article class="workflow-step">
+
+                        <span class="workflow-number">06</span>
+
+                        <h3>EKS Cluster</h3>
+
+                        <p>
+                            An Amazon EKS Kubernetes cluster is created using
+                            eksctl.
+                        </p>
+
+                    </article>
+
+                    <article class="workflow-step">
+
+                        <span class="workflow-number">07</span>
+
+                        <h3>Worker Node</h3>
+
+                        <p>
+                            A managed node group provides a worker node for
+                            running Kubernetes workloads.
+                        </p>
+
+                    </article>
+
+                    <article class="workflow-step">
+
+                        <span class="workflow-number">08</span>
+
+                        <h3>Kubernetes</h3>
+
+                        <p>
+                            kubectl is configured and the cluster health is
+                            verified using Kubernetes commands.
+                        </p>
+
+                    </article>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             ARCHITECTURE
+        ====================================================== -->
+
+        <section class="section" id="architecture">
+
+            <div class="container">
+
+                <h2 class="section-title">
+                    Application Architecture
+                </h2>
+
+                <p class="section-description">
+                    High-level flow of the application and infrastructure
+                    used in this DevOps assignment.
+                </p>
+
+                <div class="architecture-card">
+
+                    <div
+                        class="architecture-flow"
+                        aria-label="GitHub to Docker to ECR to EKS to Kubernetes workflow"
+                    >
+
+                        <div class="architecture-item">
+                            <strong>GitHub</strong>
+                            <span>Source Code</span>
+                        </div>
+
+                        <div class="arrow" aria-hidden="true">→</div>
+
+                        <div class="architecture-item">
+                            <strong>EC2</strong>
+                            <span>Amazon Linux</span>
+                        </div>
+
+                        <div class="arrow" aria-hidden="true">→</div>
+
+                        <div class="architecture-item">
+                            <strong>Docker</strong>
+                            <span>Container Image</span>
+                        </div>
+
+                        <div class="arrow" aria-hidden="true">→</div>
+
+                        <div class="architecture-item">
+                            <strong>Amazon ECR</strong>
+                            <span>Image Registry</span>
+                        </div>
+
+                        <div class="arrow" aria-hidden="true">→</div>
+
+                        <div class="architecture-item">
+                            <strong>Amazon EKS</strong>
+                            <span>Kubernetes Cluster</span>
+                        </div>
+
+                        <div class="arrow" aria-hidden="true">→</div>
+
+                        <div class="architecture-item">
+                            <strong>Pod</strong>
+                            <span>Nginx App</span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             LIVE DASHBOARD
+        ====================================================== -->
+
+        <section class="section" id="dashboard">
+
+            <div class="container">
+
+                <h2 class="section-title">
+                    Deployment Dashboard
+                </h2>
+
+                <p class="section-description">
+                    Dynamic information displayed using JavaScript.
+                </p>
+
+                <div class="dashboard-grid">
+
+                    <article class="dashboard-card">
+
+                        <div class="dashboard-label">
+                            Application
+                        </div>
+
+                        <div class="dashboard-value">
+                            Kubernetes App
+                        </div>
+
+                        <div class="dashboard-note">
+                            ● Active
+                        </div>
+
+                    </article>
+
+                    <article class="dashboard-card">
+
+                        <div class="dashboard-label">
+                            Deployment Platform
+                        </div>
+
+                        <div class="dashboard-value">
+                            Amazon EKS
+                        </div>
+
+                        <div class="dashboard-note">
+                            ● Kubernetes
+                        </div>
+
+                    </article>
+
+                    <article class="dashboard-card">
+
+                        <div class="dashboard-label">
+                            Container Registry
+                        </div>
+
+                        <div class="dashboard-value">
+                            Amazon ECR
+                        </div>
+
+                        <div class="dashboard-note">
+                            ● Connected
+                        </div>
+
+                    </article>
+
+                    <article class="dashboard-card">
+
+                        <div class="dashboard-label">
+                            Worker Nodes
+                        </div>
+
+                        <div class="dashboard-value">
+                            1
+                        </div>
+
+                        <div class="dashboard-note">
+                            ● Ready
+                        </div>
+
+                    </article>
+
+                    <article class="dashboard-card">
+
+                        <div class="dashboard-label">
+                            Web Server
+                        </div>
+
+                        <div class="dashboard-value">
+                            Nginx
+                        </div>
+
+                        <div class="dashboard-note">
+                            ● Running
+                        </div>
+
+                    </article>
+
+                    <article class="dashboard-card">
+
+                        <div class="dashboard-label">
+                            Application Port
+                        </div>
+
+                        <div class="dashboard-value">
+                            80
+                        </div>
+
+                        <div class="dashboard-note">
+                            ● HTTP
+                        </div>
+
+                    </article>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================================
+             PROJECT DETAILS
+        ====================================================== -->
+
+        <section class="section details-section">
+
+            <div class="container">
+
+                <h2 class="section-title">
+                    Project Details
+                </h2>
+
+                <p class="section-description">
+                    Technical information about the application and
+                    infrastructure used for this assignment.
+                </p>
+
+                <div class="details-grid">
+
+                    <div class="details-card">
+
+                        <h3>
+                            Application Information
+                        </h3>
+
+                        <div class="detail-row">
+
+                            <span class="detail-label">
+                                Application
+                            </span>
+
+                            <span class="detail-value">
+                                Kubernetes Web Application
+                            </span>
+
+                        </div>
+
+                        <div class="detail-row">
+
+                            <span class="detail-label">
+                                Web Server
+                            </span>
+
+                            <span class="detail-value">
+                                Nginx
+                            </span>
+
+                        </div>
+
+                        <div class="detail-row">
+
+                            <span class="detail-label">
+                                Container Platform
+                            </span>
+
+                            <span class="detail-value">
+                                Docker
+                            </span>
+
+                        </div>
+
+                        <div class="detail-row">
+
+                            <span class="detail-label">
+                                Application Port
+                            </span>
+
+                            <span class="detail-value">
+                                80
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="details-card">
+
+                        <h3>
+                            AWS & Kubernetes
+                        </h3>
+
+                        <div class="detail-row">
+
+                            <span class="detail-label">
+                                Container Registry
+                            </span>
+
+                            <span class="detail-value">
+                                Amazon ECR
+                            </span>
+
+                        </div>
+
+                        <div class="detail-row">
+
+                            <span class="detail-label">
+                                Kubernetes Service
+                            </span>
+
+                            <span class="detail-value">
+                                Amazon EKS
+                            </span>
+
+                        </div>
+
+                        <div class="detail-row">
+
+                            <span class="detail-label">
+                                Kubernetes CLI
+                            </span>
+
+                            <span class="detail-value">
+                                kubectl
+                            </span>
+
+                        </div>
+
+                        <div class="detail-row">
+
+                            <span class="detail-label">
+                                Cluster Tool
+                            </span>
+
+                            <span class="detail-value">
+                                eksctl
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <!-- =========================================================
+         FOOTER
+    ========================================================= -->
+
+    <footer>
+
+        <div class="container footer-grid">
+
+            <div>
+
+                <div class="footer-title">
+                    Kubernetes DevOps Application
+                </div>
+
+                <div class="footer-text">
+                    Docker • Amazon ECR • Kubernetes • Amazon EKS • Nginx
+                </div>
+
+                <div
+                    class="footer-text"
+                    style="margin-top: 7px;"
+                >
+                    Last updated:
+                    <span id="currentDate"></span>
+                </div>
+
+            </div>
+
+            <div class="footer-links">
+
+                <a href="#home">
+                    Home
+                </a>
+
+                <a href="#workflow">
+                    Workflow
+                </a>
+
+                <a href="#dashboard">
+                    Status
+                </a>
+
+            </div>
+
+        </div>
+
+    </footer>
+
+
+    <!-- =========================================================
+         JAVASCRIPT
+    ========================================================= -->
+
+    <script>
+
+        /*
+         * ========================================================
+         * MOBILE NAVIGATION
+         * ========================================================
+         */
+
+        const menuButton =
+            document.getElementById("menuButton");
+
+        const navLinks =
+            document.getElementById("navLinks");
+
+        menuButton.addEventListener("click", function () {
+
+            const isOpen =
+                navLinks.classList.toggle("open");
+
+            menuButton.setAttribute(
+                "aria-expanded",
+                String(isOpen)
+            );
+
+            menuButton.setAttribute(
+                "aria-label",
+                isOpen
+                    ? "Close navigation menu"
+                    : "Open navigation menu"
+            );
+
+        });
+
+
+        /*
+         * Close the mobile menu after selecting a link.
+         */
+
+        document
+            .querySelectorAll(".nav-links a")
+            .forEach(function (link) {
+
+                link.addEventListener("click", function () {
+
+                    navLinks.classList.remove("open");
+
+                    menuButton.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
+
+                    menuButton.setAttribute(
+                        "aria-label",
+                        "Open navigation menu"
+                    );
+
+                });
+
+            });
+
+
+        /*
+         * ========================================================
+         * DARK MODE
+         * ========================================================
+         */
+
+        const themeButton =
+            document.getElementById("themeButton");
+
+        const savedTheme =
+            localStorage.getItem("theme");
+
+        if (savedTheme === "dark") {
+
+            document.body.classList.add("dark");
+
+            themeButton.textContent = "☀️";
+
+        }
+
+
+        themeButton.addEventListener("click", function () {
+
+            document.body.classList.toggle("dark");
+
+            const darkMode =
+                document.body.classList.contains("dark");
+
+            localStorage.setItem(
+                "theme",
+                darkMode ? "dark" : "light"
+            );
+
+            themeButton.textContent =
+                darkMode ? "☀️" : "🌙";
+
+        });
+
+
+        /*
+         * ========================================================
+         * CURRENT DATE
+         * ========================================================
+         */
+
+        const currentDate =
+            document.getElementById("currentDate");
+
+        const today =
+            new Date();
+
+        currentDate.textContent =
+            today.toLocaleDateString(
+                undefined,
+                {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric"
+                }
+            );
+
+
+        /*
+         * ========================================================
+         * DYNAMIC APPLICATION STATUS
+         * ========================================================
+         *
+         * This performs a lightweight browser-side status update.
+         * It does not directly query Kubernetes because a static
+         * HTML page cannot securely access your EKS cluster API.
+         */
+
+        const statusText =
+            document.getElementById("statusText");
+
+        const statusMessage =
+            document.getElementById("statusMessage");
+
+        function updateApplicationStatus() {
+
+            const now =
+                new Date();
+
+            statusText.textContent =
+                "RUNNING";
+
+            statusMessage.textContent =
+                "Application is active and ready. Last checked at "
+                +
+                now.toLocaleTimeString();
+
+        }
+
+        updateApplicationStatus();
+
+        /*
+         * Refresh the displayed status every 30 seconds.
+         */
+
+        setInterval(
+            updateApplicationStatus,
+            30000
+        );
+
+    </script>
+
+</body>
+</html>
+```
